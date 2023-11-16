@@ -17,7 +17,11 @@ BINARY = firmware
 # Basic Device Setup
 
 LIBNAME			= opencm3_stm32h7
-DEFS				+= -DSTM32H7
+DEFS				+= -DSTM32H7 \
+                       -DSTM32H7XXXG \
+					   -DSTM32H723ZGT6 \
+					   -DSTM32H723ZGT6U 
+
 FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv5-d16
 ARCH_FLAGS	= -mthumb -mcpu=cortex-m7 $(FP_FLAGS)
 
@@ -52,18 +56,13 @@ STFLASH		= $(shell which st-flash)
 OPT		:= -Os
 DEBUG		:= -ggdb3
 CSTD		?= -std=c99
+CXXSTD      ?= -std=c++17
 
 
 ###############################################################################
 # Source files
 
 OBJS		+= $(SRC_DIR)/$(BINARY).o
-OBJS		+= $(SRC_DIR)/bootloader.o
-OBJS		+= $(SRC_DIR)/timer.o
-OBJS		+= $(SRC_DIR)/info.o
-OBJS		+= $(SHARED_SRC_DIR)/core/system.o
-OBJS		+= $(SHARED_SRC_DIR)/core/uart.o
-OBJS		+= $(SHARED_SRC_DIR)/core/ring-buffer.o
 
 ###############################################################################
 # C flags
@@ -76,7 +75,6 @@ TGT_CFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 
 ###############################################################################
 # C++ flags
-CXXSTD           = -std=c++17
 TGT_CXXFLAGS	+= $(OPT) $(CXXSTD) $(DEBUG)
 TGT_CXXFLAGS	+= $(ARCH_FLAGS)
 TGT_CXXFLAGS	+= -Wextra -Wshadow -Wredundant-decls  -Weffc++

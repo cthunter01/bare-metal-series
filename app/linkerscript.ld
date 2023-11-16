@@ -2,7 +2,6 @@
  * This file is part of the libopencm3 project.
  *
  * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2011 Stephen Caudle <scaudle@doceme.com>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,11 +17,14 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Define memory regions. */
+/*
+ * This is a generic linker script for Cortex-M targets using libopencm3.
+ */
+
 MEMORY
 {
-	rom 	 (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
-	ram 	 (rwx) : ORIGIN = 0x20000000, LENGTH = 96K
+	rom (rx) : ORIGIN = 0x08000000, LENGTH = 512K
+	ram (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 
 /* Enforce emmition of the vector table. */
@@ -35,14 +37,7 @@ ENTRY(reset_handler)
 SECTIONS
 {
 	.text : {
-		KEEP (*(.bootloader_section))
-
 		*(.vectors)	/* Vector table */
-		. = ALIGN(16);
-
-		KEEP (*(.firmware_info))
-		KEEP (*(.firmware_signature))
-
 		*(.text*)	/* Program code */
 		. = ALIGN(4);
 		*(.rodata*)	/* Read-only data */

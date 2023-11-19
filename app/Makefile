@@ -16,19 +16,16 @@ BINARY = firmware
 ###############################################################################
 # Basic Device Setup
 
-LIBNAME			= opencm3_stm32h7
-DEFS				+= -DSTM32H7 \
-                       -DSTM32H7XXXG \
-					   -DSTM32H723ZGT6 \
-					   -DSTM32H723ZGT6U 
+LIBNAME		= opencm3_stm32h7
+DEFS		+= -DSTM32H7
 
-FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv5-d16
+FP_FLAGS	?= -mfloat-abi=hard -mfpu=fpv5-d16
 ARCH_FLAGS	= -mthumb -mcpu=cortex-m7 $(FP_FLAGS)
 
 ###############################################################################
 # Linkerscript
 
-LDSCRIPT = linkerscript.ld
+LDSCRIPT = stm32h723gzt6.ld
 LDLIBS		+= -l$(LIBNAME)
 LDFLAGS		+= -L$(OPENCM3_DIR)/lib
 

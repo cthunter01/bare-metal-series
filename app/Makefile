@@ -16,8 +16,9 @@ BINARY = firmware
 ###############################################################################
 # Basic Device Setup
 
-LIBNAME		= opencm3_stm32h7
-DEFS		+= -DSTM32H7
+#LIBNAME		= opencm3_stm32h7
+LIBNAME		= opencm3_stm32f7
+DEFS		+= -DSTM32F7
 
 FP_FLAGS	?= -mfloat-abi=hard -mfpu=fpv5-d16
 ARCH_FLAGS	= -mthumb -mcpu=cortex-m7 $(FP_FLAGS)

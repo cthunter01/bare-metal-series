@@ -3,10 +3,11 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/**"
             ],
             "defines": [
-                "STM32H7",
+                //"STM32H7",
+                "STM32F7",
                 "__ARM_ARCH_7EM__"
             ],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",

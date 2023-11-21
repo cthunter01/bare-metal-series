@@ -1,16 +1,10 @@
+#include "core/system.h"
+
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
-
-#include <libopencm3/cm3/vector.h> // systick interrupt handler.
-                                   // includes nvic.h which declares sys_tick_handler
-                                
-
-#define LED_PORT (GPIOA)
-#define LED_PIN  (GPIO5)
-
-#define CPU_FREQ     (84000000)
-#define SYSTICK_FREQ (1000)
+#include <libopencm3/cm3/vector.h> // systick interrupt handler. Also
+                                   // include nvic.h which declares sys_tick_handler
 
 
 // volatile because only used in sys_tick_handler which the compiler
@@ -22,19 +16,17 @@ volatile uint32_t ticks = 0;
 void sys_tick_handler(void)
 {
   ticks++;
-  if(ticks % 100 == 0)
+  if(ticks % 500 == 0)
   {
     ticks = 0;
     gpio_toggle(LED_PORT, LED_PIN);
   }
 }
 
-/*
-static uint64_t get_ticks(void)
+uint32_t get_ticks(void)
 {
   return ticks;
 }
-*/
 
 static void rcc_setup(void)
 {
@@ -58,30 +50,9 @@ static void systick_setup(void)
   systick_interrupt_enable();
 }
 
-int main(void)
+void system_setup()
 {
-begin_main:
-  rcc_setup();
-  gpio_setup();
-  systick_setup();
-
-  //uint64_t start_time = get_ticks();
-  while (1)
-  {
-    /*
-    if(get_ticks() - start_time > 1000)
-    {
-      gpio_toggle(LED_PORT, LED_PIN);
-      start_time = get_ticks();
-    }
-    */
-    // do useful work
-  }
-
-// If for some reason we broke out of the while loop,
-// go back to beginning of main().
-goto begin_main;
-
-  // Never return
-  return 0;
+    rcc_setup();
+    gpio_setup();
+    systick_setup();
 }

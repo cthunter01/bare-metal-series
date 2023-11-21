@@ -58,6 +58,7 @@ CSTD		?= -std=c99
 # Source files
 
 OBJS		+= $(SRC_DIR)/$(BINARY).o
+OBJS		+= $(SRC_DIR)/core/system.o
 
 ###############################################################################
 # C flags
@@ -98,7 +99,10 @@ endif
 ###############################################################################
 # Used libraries
 
-LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+#LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+
+# when compiling with g++, don't use -lnosys. The linker can't find write_r()?
+LDLIBS		+= -Wl,--start-group -lc -lgcc -Wl,--end-group
 
 ###############################################################################
 ###############################################################################

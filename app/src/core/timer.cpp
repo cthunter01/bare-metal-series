@@ -39,6 +39,14 @@ void timer_pwm_set_duty_cycle(float duty_cycle)
 {
     // duty_cycle = (ccr / arr) * 100
     // ccr = duty_cycle * arr / 100
+    if(duty_cycle < 0.0f)
+    {
+        duty_cycle = 0.0f;
+    }
+    if(duty_cycle > 100.0f)
+    {
+        duty_cycle = 100.0;
+    }
     float raw_value = (float)ARR_VALUE * (duty_cycle / 100.0f);
     timer_set_oc_value(TIM2, TIM_OC1, (uint32_t)raw_value);
 }

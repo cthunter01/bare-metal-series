@@ -11,7 +11,7 @@ OPENCM3_DIR    = ../libopencm3
 SHARED_SRC_DIR = ../shared/src
 SHARED_INC_DIR = ../shared/inc
 
-BINARY = firmware
+BINARY = bootloader
 
 ###############################################################################
 # Basic Device Setup
@@ -60,9 +60,6 @@ CXXSTD		?= -std=c++17
 # Source files
 
 OBJS		+= $(SRC_DIR)/$(BINARY).o
-OBJS		+= $(SRC_DIR)/bootloader.o
-OBJS		+= $(SRC_DIR)/core/system.o
-OBJS		+= $(SRC_DIR)/core/timer.o
 
 ###############################################################################
 ifeq ($(DEBUG),1)
@@ -163,6 +160,7 @@ print-%:
 %.bin: %.elf
 	@#printf "  OBJCOPY $(*).bin\n"
 	$(Q)$(OBJCOPY) -Obinary $(*).elf $(*).bin
+	$(Q)python pad_bootloader.py
 
 %.hex: %.elf
 	@#printf "  OBJCOPY $(*).hex\n"

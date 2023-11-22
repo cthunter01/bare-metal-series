@@ -1,5 +1,5 @@
-#include <core/system.h>
-#include <core/timer.h>
+#include "core/system.h"
+#include "core/timer.h"
 
 int main(void)
 {
@@ -7,16 +7,17 @@ begin_main:
   system_setup();
 
   uint32_t start_time = get_ticks();
-  float duty_cycle = 0.0f;
+  float duty_cycle = 1.0f;
+  float delta = 1.0f;
 
   while (1)
   {
     if(get_ticks() - start_time >= 10)
     {
-      duty_cycle += 1.0f;
-      if(duty_cycle > 100.0f)
+      duty_cycle += delta;
+      if(duty_cycle > 99.0f || duty_cycle < 1.0f)
       {
-        duty_cycle = 0.0f;
+        delta *= -1.0f;
       }
       timer_pwm_set_duty_cycle(duty_cycle);
       start_time = get_ticks();

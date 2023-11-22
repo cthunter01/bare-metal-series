@@ -1,4 +1,5 @@
 #include "core/system.h"
+#include "core/timer.h"
 
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
@@ -9,18 +10,13 @@
 
 // volatile because only used in sys_tick_handler which the compiler
 // might not see is ever called (it is, but it's an interrupt)
-volatile uint32_t ticks = 0;
+static volatile uint32_t ticks = 0;
 
 // initially defined as a weak function in vector.c. We can redefine
 // it for our purposes since the default is an alias for null_handler()
 void sys_tick_handler(void)
 {
   ticks++;
-  if(ticks % 500 == 0)
-  {
-    ticks = 0;
-    gpio_toggle(LED_PORT, LED_PIN);
-  }
 }
 
 uint32_t get_ticks(void)
@@ -31,13 +27,22 @@ uint32_t get_ticks(void)
 static void rcc_setup(void)
 {
   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
+  /*
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_180MHZ]);
+
+  while(!rcc_osc_ready_int_flag(RCC_HSE))
+  {
+    // keep waiting until the clock is stabilized. Don't do anything
+  }
+  */
 }
 
 static void gpio_setup(void)
 {
 
   rcc_periph_clock_enable(RCC_GPIOA);
-  gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLDOWN, LED_PIN);
+  gpio_mode_setup(LED_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN);
+  gpio_set_af(LED_PORT, GPIO_AF1, LED_PIN);
 }
 
 static void systick_setup(void)
@@ -55,4 +60,7 @@ void system_setup()
     rcc_setup();
     gpio_setup();
     systick_setup();
+    timer_setup();
+
+    timer_pwm_set_duty_cycle(0.0f);
 }

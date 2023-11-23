@@ -61,8 +61,8 @@ CXXSTD		?= -std=c++17
 
 OBJS		+= $(SRC_DIR)/$(BINARY).o
 OBJS		+= $(SRC_DIR)/bootloader.o
-OBJS		+= $(SRC_DIR)/core/system.o
-OBJS		+= $(SRC_DIR)/core/timer.o
+OBJS		+= $(SHARED_SRC_DIR)/core/system.o
+OBJS		+= $(SRC_DIR)/timer.o
 
 ###############################################################################
 ifeq ($(DEBUG),1)

@@ -1,10 +1,11 @@
 #include "core/system.h"
-#include "core/timer.h"
+#include "timer.h"
 
 int main(void)
 {
 begin_main:
   system_setup();
+  timer_setup();
 
   uint32_t start_time = get_ticks();
   float duty_cycle = 1.0f;

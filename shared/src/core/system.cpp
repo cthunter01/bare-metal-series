@@ -1,5 +1,4 @@
 #include "core/system.h"
-#include "core/timer.h"
 
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
@@ -60,7 +59,5 @@ void system_setup()
     rcc_setup();
     gpio_setup();
     systick_setup();
-    timer_setup();
 
-    timer_pwm_set_duty_cycle(0.0f);
 }

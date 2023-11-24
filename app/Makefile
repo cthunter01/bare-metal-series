@@ -31,9 +31,9 @@ LDFLAGS		+= -L$(OPENCM3_DIR)/lib
 ###############################################################################
 # Includes
 
-DEFS		+= -I$(OPENCM3_DIR)/include
 DEFS		+= -I$(INC_DIR)
 DEFS		+= -I$(SHARED_INC_DIR)
+DEFS		+= -I$(OPENCM3_DIR)/include
 
 ###############################################################################
 # Executables
@@ -62,6 +62,8 @@ CXXSTD		?= -std=c++17
 OBJS		+= $(SRC_DIR)/$(BINARY).o
 OBJS		+= $(SRC_DIR)/bootloader.o
 OBJS		+= $(SHARED_SRC_DIR)/core/system.o
+OBJS		+= $(SHARED_SRC_DIR)/core/uart.o
+OBJS		+= $(SHARED_SRC_DIR)/core/ring-buffer.o
 OBJS		+= $(SRC_DIR)/timer.o
 
 ###############################################################################

@@ -3,7 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/app/inc/",
+                "${workspaceFolder}/bootloader/inc/",
+                "${workspaceFolder}/shared/inc/",
+                "${workspaceFolder}/libopencm3/include/"
             ],
             "defines": [
                 "STM32F4",

@@ -15,25 +15,15 @@ typedef enum comms_state_t
 static comms_state_t state = comms_state_t::CommsState_Length;
 static uint8_t data_byte_count = 0;
 
-static comms_packet_t temporary_packet = 
-{
-    .len = 0,
-    .data = {0xaa},
-    .crc = 0
-};
+static comms_packet_t temporary_packet;
 comms_packet_t retx_packet;
 comms_packet_t ack_packet;
-comms_packet_t last_xmit_packet = 
-{
-    .len = 0,
-    .data = {0xaa},
-    .crc = 0
-};
+comms_packet_t last_xmit_packet;
 
 static comms_packet_t packet_buffer[PACKET_BUFFER_SIZE];
 static uint32_t packet_read_index = 0;
 static uint32_t packet_write_index = 0;
-static uint32_t packet_buffer_mask = PACKET_BUFFER_SIZE;
+static uint32_t packet_buffer_mask = PACKET_BUFFER_SIZE - 1;
 
 static void comms_packet_copy(const comms_packet_t* src, comms_packet_t* dest)
 {
@@ -104,6 +94,20 @@ void comms_setup()
         ack_packet.data[i] = 0xaa;
     }
     ack_packet.crc = comms_compute_crc(&ack_packet);
+
+    temporary_packet.len = 0;
+    for(uint8_t i = 0; i < PACKET_DATA_LENGTH; ++i)
+    {
+        temporary_packet.data[i] = 0xaa;
+    }
+    temporary_packet.crc = comms_compute_crc(&temporary_packet);
+
+    last_xmit_packet.len = 0;
+    for(uint8_t i = 0; i < PACKET_DATA_LENGTH; ++i)
+    {
+        last_xmit_packet.data[i] = 0xaa;
+    }
+    last_xmit_packet.crc = comms_compute_crc(&last_xmit_packet);
 
 }
 
@@ -181,16 +185,15 @@ bool comms_packets_available()
 void comms_write_packet(comms_packet_t* packet)
 {
     uart_write(reinterpret_cast<uint8_t*>(packet), PACKET_LENGTH);
+    comms_packet_copy(packet, &last_xmit_packet);
 }
 void comms_read_packet(comms_packet_t* packet)
 {
-    if(comms_packets_available())
-    {
-        comms_packet_copy(&packet_buffer[packet_read_index], packet);
-    }
+    comms_packet_copy(&packet_buffer[packet_read_index], packet);
+    packet_read_index = (packet_read_index + 1) & packet_buffer_mask;
 }
 
 uint8_t comms_compute_crc(comms_packet_t* packet)
 {
-    return crc8(reinterpret_cast<uint8_t*>(&packet), PACKET_LENGTH - PACKET_CRC_BYTES);
+    return crc8(reinterpret_cast<uint8_t*>(packet), PACKET_LENGTH - PACKET_CRC_BYTES);
 }

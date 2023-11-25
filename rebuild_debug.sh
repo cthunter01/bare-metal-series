@@ -2,10 +2,10 @@
 
 cd bootloader
 make clean
-DEBUG=1 make
+make
 cd ..
 cd app
 make clean
-DEBUG=1 make
+make
 cd ..
 

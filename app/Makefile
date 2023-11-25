@@ -67,20 +67,7 @@ OBJS		+= $(SHARED_SRC_DIR)/core/ring-buffer.o
 OBJS		+= $(SRC_DIR)/timer.o
 
 ###############################################################################
-ifeq ($(DEBUG),1)
-# C flags
-TGT_CFLAGS += $(OPT_DEBUG) $(CSTD) $(DBG)
-TGT_CFLAGS += $(ARCH_FLAGS)
-TGT_CFLAGS += -Wextra -Wshadow -Wimplicit-function-declaration
-TGT_CFLAGS += -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes
-TGT_CFLAGS += -fno-common -ffunction-sections -fdata-sections
-
-# C++ flags
-TGT_CXXFLAGS += $(OPT_DEBUG) $(CXXSTD) $(DBG)
-TGT_CXXFLAGS += $(ARCH_FLAGS)
-TGT_CXXFLAGS += -Wextra -Wshadow -Wredundant-decls  -Weffc++
-TGT_CXXFLAGS += -fno-common -ffunction-sections -fdata-sections -fno-exceptions
-else
+ifeq ($(RELEASE),1)
 # C flags
 TGT_CFLAGS += $(OPT_RELEASE) $(CSTD)
 TGT_CFLAGS += $(ARCH_FLAGS)
@@ -90,6 +77,19 @@ TGT_CFLAGS += -fno-common -ffunction-sections -fdata-sections
 
 # C++ flags
 TGT_CXXFLAGS += $(OPT_RELEASE) $(CXXSTD)
+TGT_CXXFLAGS += $(ARCH_FLAGS)
+TGT_CXXFLAGS += -Wextra -Wshadow -Wredundant-decls  -Weffc++
+TGT_CXXFLAGS += -fno-common -ffunction-sections -fdata-sections -fno-exceptions
+else
+# C flags
+TGT_CFLAGS += $(OPT_DEBUG) $(CSTD) $(DBG)
+TGT_CFLAGS += $(ARCH_FLAGS)
+TGT_CFLAGS += -Wextra -Wshadow -Wimplicit-function-declaration
+TGT_CFLAGS += -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes
+TGT_CFLAGS += -fno-common -ffunction-sections -fdata-sections
+
+# C++ flags
+TGT_CXXFLAGS += $(OPT_DEBUG) $(CXXSTD) $(DBG)
 TGT_CXXFLAGS += $(ARCH_FLAGS)
 TGT_CXXFLAGS += -Wextra -Wshadow -Wredundant-decls  -Weffc++
 TGT_CXXFLAGS += -fno-common -ffunction-sections -fdata-sections -fno-exceptions
@@ -107,10 +107,10 @@ TGT_CPPFLAGS	+= $(DEFS)
 
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
-ifeq ($(DEBUG),1)
-TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DBG)
-else
+ifeq ($(RELEASE),1)
 TGT_LDFLAGS		+= $(ARCH_FLAGS)
+else
+TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DBG)
 endif
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections

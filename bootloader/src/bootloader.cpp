@@ -4,6 +4,11 @@
 #include <libopencm3/cm3/scb.h>
 #include <libopencm3/cm3/vector.h>
 
+#include "core/uart.h"
+#include "core/system.h"
+#include "comms.h"
+
+
 #define BOOTLOADER_SIZE (0x8000U) // 32K
 #define MAIN_APP_START_ADDR (FLASH_BASE + BOOTLOADER_SIZE)
 
@@ -30,8 +35,27 @@ static void jump_to_application_main()
   SCB_VTOR = BOOTLOADER_SIZE;
   main_vector_table->reset();
 }
+
 int main()
 {
+  system_setup();
+  uart_setup();
+  comms_setup();
+
+  comms_packet_t packet = {
+    .len = 9,
+    .data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa },
+    .crc = 0
+  };
+  packet.crc = comms_compute_crc(&packet);
+
+  while(true)
+  {
+    comms_update();
+    //comms_write_packet(&packet);
+    system_delay(500);
+  }
+  
   jump_to_application_main();
   // Never return
   return 0;

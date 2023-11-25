@@ -29,7 +29,7 @@ begin_main:
     if(uart_data_available())
     {
       uint8_t data = uart_read_byte();
-      uart_write_byte(data + 1);
+      uart_write_byte(data);
     }
 
     // simulate some higher workload

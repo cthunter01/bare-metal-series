@@ -1,5 +1,4 @@
 #include "core/system.h"
-#include "core/timer.h"
 
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
@@ -41,8 +40,21 @@ static void gpio_setup(void)
 {
 
   rcc_periph_clock_enable(RCC_GPIOA);
+
+  // OMG don't forget this. enabling RCC_USART6 isn't enough if the
+  // pins are on GPIOC. Also have to enable the GPIOC clock
+  rcc_periph_clock_enable(RCC_GPIOC);
+  
+  // LED setup
   gpio_mode_setup(LED_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN);
   gpio_set_af(LED_PORT, GPIO_AF1, LED_PIN);
+
+  // UART setup
+  // PC6 and PC7 are USART TX and RX respectively
+  gpio_mode_setup(USART_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, USART_TX | USART_RX);
+  // USART is AF8
+  gpio_set_af(USART_PORT, GPIO_AF8, USART_TX | USART_RX);
+
 }
 
 static void systick_setup(void)
@@ -60,7 +72,14 @@ void system_setup()
     rcc_setup();
     gpio_setup();
     systick_setup();
-    timer_setup();
 
-    timer_pwm_set_duty_cycle(0.0f);
+}
+
+void system_delay(uint32_t milliseconds)
+{
+  uint32_t end_time = get_ticks() + milliseconds;
+  while(get_ticks() < end_time)
+  {
+    // spin
+  }
 }

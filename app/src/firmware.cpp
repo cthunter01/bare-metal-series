@@ -6,21 +6,20 @@
 
 int main(void)
 {
-begin_main:
   system_setup();
   timer_setup();
   uart_setup();
 
-  stm32f401::SysTick sysTickObject;
+  stm32f401::SysTick& sysTickObject = stm32f401::SysTick::getInstance();
+  sysTickObject.setFrequency(2000U);
+  sysTickObject.start();
 
-  //uint32_t start_time = get_ticks();
   uint32_t start_time = sysTickObject.getTicks();
   float duty_cycle = 1.0f;
   float delta = 1.0f;
 
   while (1)
   {
-    //if(get_ticks() - start_time >= 10)
     if(sysTickObject.getTicks() - start_time >= 10)
     {
       duty_cycle += delta;
@@ -29,7 +28,6 @@ begin_main:
         delta *= -1.0f;
       }
       timer_pwm_set_duty_cycle(duty_cycle);
-      //start_time = get_ticks();
       start_time = sysTickObject.getTicks();
     }
 
@@ -44,9 +42,6 @@ begin_main:
 
   }
 
-// If for some reason we broke out of the while loop,
-// go back to beginning of main().
-goto begin_main;
   // Never return
   return 0;
 }

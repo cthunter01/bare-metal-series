@@ -8,11 +8,21 @@ namespace stm32f401
 
 SysTick::SysTick()
   : Interruptible(),
-    ticks{0}
+    ticks{0},
+    freq{1000}
 {
-    InterruptManager::set_systick_handler(&Interruptible::interrupt_handler, this);
+    InterruptManager::set_systick_isr_handler(&Interruptible::interrupt_handler, this);
 
-    systick_set_frequency(1000, 84000000);
+}
+
+void SysTick::setFrequency(uint32_t frequency)
+{
+    freq = frequency;
+}
+
+void SysTick::start()
+{
+    systick_set_frequency(freq, 84000000);
 
     systick_counter_enable();
 

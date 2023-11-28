@@ -1,8 +1,8 @@
-#ifndef CORE_TIMER_H
-#define CORE_TIMER_H
+#ifndef _TIMER_H
+#define _TIMER_H
 
 void timer_setup(void);
 
 void timer_pwm_set_duty_cycle(float duty_cycle);
 
-#endif // CORE_TIMER_H
+#endif // _TIMER_H

@@ -2,6 +2,8 @@
 #include "core/uart.h"
 #include "timer.h"
 
+#include "core/SysTick.h"
+
 int main(void)
 {
 begin_main:
@@ -9,13 +11,17 @@ begin_main:
   timer_setup();
   uart_setup();
 
-  uint32_t start_time = get_ticks();
+  stm32f401::SysTick sysTickObject;
+
+  //uint32_t start_time = get_ticks();
+  uint32_t start_time = sysTickObject.getTicks();
   float duty_cycle = 1.0f;
   float delta = 1.0f;
 
   while (1)
   {
-    if(get_ticks() - start_time >= 10)
+    //if(get_ticks() - start_time >= 10)
+    if(sysTickObject.getTicks() - start_time >= 10)
     {
       duty_cycle += delta;
       if(duty_cycle > 99.0f || duty_cycle < 1.0f)
@@ -23,13 +29,14 @@ begin_main:
         delta *= -1.0f;
       }
       timer_pwm_set_duty_cycle(duty_cycle);
-      start_time = get_ticks();
+      //start_time = get_ticks();
+      start_time = sysTickObject.getTicks();
     }
 
     if(uart_data_available())
     {
       uint8_t data = uart_read_byte();
-      uart_write_byte(data);
+      uart_write_byte(data + 1);
     }
 
     // simulate some higher workload

@@ -7,6 +7,7 @@
                                    // include nvic.h which declares sys_tick_handler
 
 
+/*
 // volatile because only used in sys_tick_handler which the compiler
 // might not see is ever called (it is, but it's an interrupt)
 static volatile uint32_t ticks = 0;
@@ -22,7 +23,7 @@ uint32_t get_ticks(void)
 {
   return ticks;
 }
-
+*/
 static void rcc_setup(void)
 {
   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
@@ -57,6 +58,7 @@ static void gpio_setup(void)
 
 }
 
+/*
 static void systick_setup(void)
 {
   systick_set_frequency(SYSTICK_FREQ, CPU_FREQ);
@@ -66,15 +68,17 @@ static void systick_setup(void)
   // will call sys_tick_handler() when interrupt arrives
   systick_interrupt_enable();
 }
+*/
 
 void system_setup()
 {
     rcc_setup();
     gpio_setup();
-    systick_setup();
+    //systick_setup();
 
 }
 
+/*
 void system_delay(uint32_t milliseconds)
 {
   uint32_t end_time = get_ticks() + milliseconds;
@@ -83,3 +87,4 @@ void system_delay(uint32_t milliseconds)
     // spin
   }
 }
+*/

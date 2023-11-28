@@ -14,7 +14,7 @@
 #define SYSTICK_FREQ (1000)
 void system_setup(void);
 
-uint32_t get_ticks(void);
+//uint32_t get_ticks(void);
 
-void system_delay(uint32_t milliseconds);
+//void system_delay(uint32_t milliseconds);
 #endif // INC_CORE_SYSTEM_H

@@ -19,7 +19,7 @@ BINARY = bootloader
 LIBNAME			= opencm3_stm32f4
 DEFS				+= -DSTM32F4
 FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
-ARCH_FLAGS	= -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
+ARCH_FLAGS	= -fno-use-cxa-atexit -specs=nano.specs -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
 
 ###############################################################################
 # Linkerscript
@@ -42,7 +42,7 @@ PREFIX		?= arm-none-eabi-
 
 CC		:= $(PREFIX)gcc
 CXX		:= $(PREFIX)g++
-LD		:= $(PREFIX)gcc
+LD		:= $(PREFIX)g++
 AR		:= $(PREFIX)ar
 AS		:= $(PREFIX)as
 OBJCOPY		:= $(PREFIX)objcopy
@@ -124,7 +124,7 @@ endif
 #LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 
 # when compiling with g++, don't use -lnosys. The linker can't find write_r()?
-LDLIBS		+= -Wl,--start-group -lc -lgcc -Wl,--end-group
+LDLIBS		+= -Wl,--start-group -lgcc -Wl,--end-group -lnosys -specs=nosys.specs
 
 ###############################################################################
 ###############################################################################

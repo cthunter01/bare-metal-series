@@ -38,6 +38,7 @@ static void jump_to_application_main()
 
 int main()
 {
+  /*
   system_setup();
   uart_setup();
   comms_setup();
@@ -55,6 +56,7 @@ int main()
     //comms_write_packet(&packet);
     system_delay(500);
   }
+  */
   
   jump_to_application_main();
   // Never return

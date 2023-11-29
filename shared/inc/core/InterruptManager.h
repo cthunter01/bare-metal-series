@@ -11,7 +11,7 @@ public:
     InterruptManager();
     ~InterruptManager() {}
 
-    static void set_usart6_isr_handler(void(stm32f401::Interruptible::*handler)(void), stm32f401::Interruptible* obj)
+    static void set_usart6_isr_handler(void(stm32f4::Interruptible::*handler)(void), stm32f4::Interruptible* obj)
     {
         usart6_handler = std::bind(handler, obj);
         /*
@@ -20,7 +20,7 @@ public:
         */
     }
 
-    static void set_systick_handler(void(stm32f401::Interruptible::*handler)(void), stm32f401::Interruptible* obj)
+    static void set_systick_handler(void(stm32f4::Interruptible::*handler)(void), stm32f4::Interruptible* obj)
     {
         systick_handler = std::bind(handler, obj);
         /*

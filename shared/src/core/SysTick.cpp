@@ -4,7 +4,7 @@
 #include "core/system.h"
 #include <libopencm3/cm3/systick.h>
 
-namespace stm32f401
+namespace stm32f4
 {
 
 SysTick::SysTick()

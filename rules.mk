@@ -1,3 +1,11 @@
+# Supported BOARDS are
+# BLACKPILLF411
+# NUCLEOF401RE
+BOARD = BLACKPILLF411
+
+ifeq ($(BOARD),BLACKPILLF411)
+LDSCRIPT = stm32f411.ld
+endif
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
@@ -20,13 +28,12 @@ LIBNAME			= opencm3_stm32f4
 DEFS				+= -DSTM32F4
 FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ARCH_FLAGS	= -fno-use-cxa-atexit -specs=nano.specs -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
-ARCH_FLAGS	+= -DBLACKPILLF411
+ARCH_FLAGS	+= $(BOARD)
 #ARCH_FLAGS	+= -DNUCLEOF401RE
 
 ###############################################################################
 # Linkerscript
 
-LDSCRIPT = stm32f411.ld
 LDLIBS		+= -l$(LIBNAME)
 LDFLAGS		+= -L$(OPENCM3_DIR)/lib
 

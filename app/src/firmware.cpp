@@ -13,7 +13,7 @@ begin_main:
   timer_setup();
   uart_setup();
 
-  stm32f401::SysTick sysTickObject;
+  stm32f4::SysTick sysTickObject;
 
   //uint32_t start_time = get_ticks();
   uint32_t start_time = sysTickObject.getTicks();

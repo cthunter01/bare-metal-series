@@ -8,8 +8,8 @@ void(InterruptManager::*usart6_handler)(void);
 stm32f401::Interruptible* InterruptManager::sysTickObject;
 void(InterruptManager::*systick_handler)(void);
 */
-__attribute__((section(".noinit"))) std::function<void(void)> InterruptManager::usart6_handler = InterruptManager::nullHandler;
-__attribute__((section(".noinit"))) std::function<void(void)> InterruptManager::systick_handler = InterruptManager::nullHandler;
+std::function<void(void)> InterruptManager::usart6_handler = InterruptManager::nullHandler;
+std::function<void(void)> InterruptManager::systick_handler = InterruptManager::nullHandler;
 
 InterruptManager::InterruptManager()
 {

@@ -49,6 +49,7 @@ static void gpio_setup(void)
   rcc_periph_clock_enable(USART_PORT_CLOCK);
   
   // LED setup
+  // NUCLEO only set up for one LED
 #ifdef NUCLEOF401RE
   gpio_mode_setup(LED_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN);
   gpio_set_af(LED_PORT, GPIO_AF1, LED_PIN);
@@ -97,3 +98,4 @@ void system_delay(uint32_t milliseconds)
   }
 }
 */
+

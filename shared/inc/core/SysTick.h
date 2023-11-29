@@ -5,7 +5,7 @@
 
 #include "core/Interruptible.h"
 
-namespace stm32f401
+namespace stm32f4
 {
 
 class SysTick : public Interruptible

@@ -26,7 +26,7 @@ ARCH_FLAGS	+= -DNUCLEOF401RE
 ###############################################################################
 # Linkerscript
 
-LDSCRIPT = linkerscript_stm32f401.ld
+LDSCRIPT = stm32f401.ld
 LDLIBS		+= -l$(LIBNAME)
 LDFLAGS		+= -L$(OPENCM3_DIR)/lib
 

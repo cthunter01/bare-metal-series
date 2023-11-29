@@ -27,7 +27,8 @@ uint32_t get_ticks(void)
 static void rcc_setup(void)
 {
   //rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_96MHZ]);
-  rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
+  rcc_clock_setup_pll(&rcc_hse_25mhz_3v3[RCC_CLOCK_3V3_96MHZ]);
+  //rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
   /*
   rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_180MHZ]);
 
@@ -52,6 +53,9 @@ static void gpio_setup(void)
   gpio_mode_setup(LED_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN);
   gpio_set_af(LED_PORT, GPIO_AF1, LED_PIN);
 #else
+  rcc_periph_clock_enable(LED_PORT_CLOCK2);
+  gpio_mode_setup(LED_PORT2, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN2);
+  gpio_set_af(LED_PORT2, GPIO_AF1, LED_PIN2);
   gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
 #endif
 

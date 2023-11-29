@@ -116,6 +116,13 @@ TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DBG)
 endif
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
+
+#TODO is there a way to fix this rather than
+# ignoring it? I don't think it's an issue in my
+# case, but it represents some executable code on the
+# stack, which is theoretically a security vuln.
+# Issue is InterruptManager::handler functions
+TGT_LDFLAGS     += -Wl,--no-warn-rwx-segment
 ifeq ($(V),99)
 TGT_LDFLAGS		+= -Wl,--print-gc-sections
 endif

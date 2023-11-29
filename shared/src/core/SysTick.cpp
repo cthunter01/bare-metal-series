@@ -1,6 +1,7 @@
 #include "core/SysTick.h"
 #include "core/InterruptManager.h"
 
+#include "core/system.h"
 #include <libopencm3/cm3/systick.h>
 
 namespace stm32f401
@@ -12,9 +13,9 @@ SysTick::SysTick()
 {
     InterruptManager::set_systick_handler(&Interruptible::interrupt_handler, this);
 
-    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
-    //systick_set_frequency(1000, 84000000);
-    systick_clear();
+    //systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+    systick_set_frequency(1000, CPU_FREQ);
+    //systick_clear();
 
     systick_interrupt_enable();
     systick_counter_enable();

@@ -4,6 +4,8 @@
 
 #include "core/SysTick.h"
 
+#include <libopencm3/stm32/gpio.h>
+
 int main(void)
 {
 begin_main:
@@ -15,14 +17,20 @@ begin_main:
 
   //uint32_t start_time = get_ticks();
   uint32_t start_time = sysTickObject.getTicks();
+  uint32_t flasher_time = 0U;
   float duty_cycle = 1.0f;
   float delta = 1.0f;
 
   while (1)
   {
-    //if(get_ticks() - start_time >= 10)
     if(sysTickObject.getTicks() - start_time >= 10)
     {
+      // flash 2x second
+      if(sysTickObject.getTicks() - flasher_time >= 500)
+      {
+        gpio_toggle(LED_PORT, LED_PIN);
+        flasher_time = sysTickObject.getTicks();
+      }
       duty_cycle += delta;
       if(duty_cycle > 99.0f || duty_cycle < 1.0f)
       {
@@ -38,6 +46,7 @@ begin_main:
       uint8_t data = uart_read_byte();
       uart_write_byte(data + 1);
     }
+    //sysTickObject.systemDelay(1000);
 
     // simulate some higher workload
     //system_delay(1000); // 1 second

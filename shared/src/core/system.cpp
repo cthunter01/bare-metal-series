@@ -26,6 +26,7 @@ uint32_t get_ticks(void)
 */
 static void rcc_setup(void)
 {
+  //rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_96MHZ]);
   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
   /*
   rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_180MHZ]);
@@ -40,15 +41,19 @@ static void rcc_setup(void)
 static void gpio_setup(void)
 {
 
-  rcc_periph_clock_enable(RCC_GPIOA);
+  rcc_periph_clock_enable(LED_PORT_CLOCK);
 
   // OMG don't forget this. enabling RCC_USART6 isn't enough if the
   // pins are on GPIOC. Also have to enable the GPIOC clock
-  rcc_periph_clock_enable(RCC_GPIOC);
+  rcc_periph_clock_enable(USART_PORT_CLOCK);
   
   // LED setup
+#ifdef NUCLEOF401RE
   gpio_mode_setup(LED_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, LED_PIN);
   gpio_set_af(LED_PORT, GPIO_AF1, LED_PIN);
+#else
+  gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
+#endif
 
   // UART setup
   // PC6 and PC7 are USART TX and RX respectively

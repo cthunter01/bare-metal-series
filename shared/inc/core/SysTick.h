@@ -1,5 +1,5 @@
-#ifndef _SYSTICK_H_
-#define _SYSTICK_H_
+#ifndef _SYSTICK_H
+#define _SYSTICK_H
 
 #include <cstdint>
 
@@ -24,4 +24,4 @@ private:
 };
 
 }
-#endif // _SYSTICK_H_
+#endif // _SYSTICK_H

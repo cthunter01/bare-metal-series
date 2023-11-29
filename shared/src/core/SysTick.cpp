@@ -12,11 +12,13 @@ SysTick::SysTick()
 {
     InterruptManager::set_systick_handler(&Interruptible::interrupt_handler, this);
 
-    systick_set_frequency(1000, 84000000);
-
-    systick_counter_enable();
+    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+    //systick_set_frequency(1000, 84000000);
+    systick_clear();
 
     systick_interrupt_enable();
+    systick_counter_enable();
+
 
 }
 

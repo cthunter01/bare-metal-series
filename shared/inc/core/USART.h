@@ -58,28 +58,8 @@ enum USARTConfigEnum
 class USART : public Interruptible
 {
 public:
-    static USART* getInstance()
-    {
-        return instance;
-    }
-    static void configureInstance(enum USARTConfigEnum config)
-    {
-        if(!instance)
-        {
-            instance = new USART(config);
-        }
-        else // do nothing
-        { }
-    }
-    static void configureInstance(const USARTConfig& config)
-    {
-        if(!instance)
-        {
-            instance = new USART(config);
-        }
-        else // do nothing
-        { }
-    }
+    USART(enum USARTConfigEnum config);
+    //USART(const USARTConfig& config);
 
     virtual ~USART() {}
 
@@ -92,14 +72,13 @@ public:
     void write(const std::string& str);
 
     uint8_t readByte();
+    uint8_t read(uint8_t* data, uint8_t len);
 
     bool dataAvailable();
 
     void interrupt_handler() override;
 
 private:
-    USART(enum USARTConfigEnum config);
-    USART(const USARTConfig& config);
 
     enum USARTConfigEnum _configEnum;
     USARTConfig _config;
@@ -108,7 +87,6 @@ private:
 
     ring_buffer_t _rb;
 
-    static USART* instance;
 };
 
 } // namespace 

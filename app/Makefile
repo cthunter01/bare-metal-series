@@ -73,11 +73,11 @@ CXXSTD		?= -std=c++17
 OBJS		+= $(SRC_DIR)/$(BINARY).o
 #OBJS		+= $(SRC_DIR)/bootloader.o
 OBJS		+= $(SHARED_SRC_DIR)/core/system.o
-OBJS		+= $(SHARED_SRC_DIR)/core/uart.o
 OBJS		+= $(SHARED_SRC_DIR)/core/ring-buffer.o
 OBJS		+= $(SHARED_SRC_DIR)/core/SysTick.o
 OBJS		+= $(SHARED_SRC_DIR)/core/InterruptManager.o
 OBJS		+= $(SHARED_SRC_DIR)/core/syscalls.o
+OBJS		+= $(SHARED_SRC_DIR)/core/USART.o
 OBJS		+= $(SRC_DIR)/timer.o
 
 ###############################################################################

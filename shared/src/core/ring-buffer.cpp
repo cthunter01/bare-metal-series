@@ -1,53 +1,57 @@
 #include "core/ring-buffer.h"
 
-void ring_buffer_setup(ring_buffer_t* rb,
-                       uint8_t* buffer,
-                       uint32_t size)
+ring_buffer_t::ring_buffer_t(uint8_t size)
+  : buffer{nullptr},
+    mask{size - 1U},
+    read_index{0},
+    write_index{0}
 {
-    rb->buffer = buffer;
-    rb->read_index = 0;
-    rb->write_index = 0;
-    rb->mask = size - 1;
+    buffer = new uint8_t[size];
 }
 
-bool ring_buffer_empty(ring_buffer_t* rb)
+ring_buffer_t::~ring_buffer_t()
 {
-    return rb->read_index == rb->write_index;
+    delete[] buffer;
 }
 
-bool ring_buffer_write(ring_buffer_t* rb, uint8_t byte)
+bool ring_buffer_t::empty()
+{
+    return read_index == write_index;
+}
+
+bool ring_buffer_t::write(uint8_t byte)
 {
     // probably unecessary in case of write being
     // called in an interrupt
-    uint32_t local_write_index = rb->write_index;
-    uint32_t local_read_index = rb->read_index;
+    uint32_t local_write_index = write_index;
+    uint32_t local_read_index = read_index;
     
-    uint32_t next_write_index = (local_write_index + 1) & rb->mask;
+    uint32_t next_write_index = (local_write_index + 1) & mask;
     if(local_read_index == next_write_index)
     {
         // Lose this byte
         return false;
     }
-    rb->buffer[local_write_index] = byte;
-    rb->write_index = next_write_index;
+    buffer[local_write_index] = byte;
+    write_index = next_write_index;
     return true;
 
 }
 
-bool ring_buffer_read(ring_buffer_t* rb, uint8_t* byte)
+bool ring_buffer_t::read(uint8_t* byte)
 {
     // Be careful to not just remove this local copy
     // In case of multiple readers, we want an immediate
     // copy of index to keep another reader from incrementing
     // under us
-    uint32_t local_read_index = rb->read_index;
-    if(local_read_index == rb->write_index)
+    uint32_t local_read_index = read_index;
+    if(local_read_index == write_index)
     {
         return false;
     }
 
-    *byte = rb->buffer[local_read_index];
-    local_read_index = (local_read_index + 1) & rb->mask;
-    rb->read_index = local_read_index;
+    *byte = buffer[local_read_index];
+    local_read_index = (local_read_index + 1) & mask;
+    read_index = local_read_index;
     return true;
 }

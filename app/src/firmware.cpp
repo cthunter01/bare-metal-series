@@ -1,8 +1,9 @@
 #include "core/system.h"
-#include "core/uart.h"
+#include "core/USART.h"
 #include "timer.h"
 
 #include "core/SysTick.h"
+#include "core/USART.h"
 
 #include <libopencm3/stm32/gpio.h>
 
@@ -11,9 +12,11 @@ int main(void)
 begin_main:
   system_setup();
   timer_setup();
-  uart_setup();
+  //uart_setup();
 
   stm32f4::SysTick sysTickObject;
+  stm32f4::USART usartObject(stm32f4::USART6_2);
+  usartObject.start();
 
   //uint32_t start_time = get_ticks();
   uint32_t start_time = sysTickObject.getTicks();
@@ -41,10 +44,11 @@ begin_main:
       start_time = sysTickObject.getTicks();
     }
 
-    if(uart_data_available())
+    if(usartObject.dataAvailable())
     {
-      uint8_t data = uart_read_byte();
-      uart_write_byte(data + 1);
+      uint8_t data = usartObject.readByte();
+      data += 1;
+      usartObject.write(&data, 1);
     }
     //sysTickObject.systemDelay(1000);
 

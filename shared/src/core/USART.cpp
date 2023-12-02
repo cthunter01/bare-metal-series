@@ -215,28 +215,20 @@ std::array<stm32f4::USARTConfig, stm32f4::USERCUSTOM> buildConfigs()
     return retVal;
 }
 
-uint8_t data_buffer[128] = {0};
-
-ring_buffer_t rb;
 }
 
 namespace stm32f4
 {
 
-USART* USART::instance{nullptr};
-
 USART::USART(enum USARTConfigEnum config)
-    : UARTConfigs(buildConfigs()),
+    : Interruptible(),
+      UARTConfigs(buildConfigs()),
       _configEnum(config),
       _config(UARTConfigs[config]),
-      _dataBuffer({0}),
-      _rb()
+      _dataBuffer{0},
+      _rb(128)
 {
-    // set up our ring_buffer. size must be power of 2
-    ring_buffer_setup(&_rb, _dataBuffer, 128);
-
     InterruptManager::set_usart6_isr_handler(&Interruptible::interrupt_handler, this);
-    
 }
 
 void USART::start()
@@ -318,7 +310,7 @@ void USART::interrupt_handler(void)
 
     if(received_data || overrun_occurred)
     {
-        if(ring_buffer_write(&rb, static_cast<uint8_t>(usart_recv(USART6))))
+        if(_rb.write(static_cast<uint8_t>(usart_recv(_config.usartNum))))
         {
             // handle failure?
         }
@@ -345,54 +337,25 @@ void USART::write(const std::string& str)
 
 bool USART::dataAvailable()
 {
-    return !ring_buffer_empty(&rb);
+    return !_rb.empty();
 }
 
 uint8_t USART::readByte()
 {
     uint8_t retVal;
-    ring_buffer_read(&rb, &retVal);
+    _rb.read(&retVal);
     return retVal;
 }
 
+uint8_t USART::read(uint8_t* data, uint8_t len)
+{
+    uint8_t i{0U};
+    while(dataAvailable() && i < len)
+    {
+        data[i] = readByte();
+        ++i;
+    }
+    return i;
+}
+
 } // namespace stm32f4
-
-/*
-void uart_write(uint8_t* data, const uint32_t len)
-{
-    for(uint32_t i = 0; i < len; ++i)
-    {
-        uart_write_byte(data[i]);
-    }
-}
-
-uint32_t uart_read(uint8_t* data, const uint32_t len)
-{
-    if(len  <= 0)
-    {
-        return 0;
-    }
-
-    for(uint32_t bytes_read = 0; bytes_read < len; ++bytes_read)
-    {
-        if(!ring_buffer_read(&rb, &data[bytes_read]))
-        {
-            // we didn't read the full length requested
-            return bytes_read;
-        }
-    }
-    return len;
-}
-
-uint8_t uart_read_byte()
-{
-    uint8_t byte = 0;
-    uart_read(&byte, 1);
-    return byte;
-}
-
-bool uart_data_available()
-{
-    return !ring_buffer_empty(&rb);
-}
-*/

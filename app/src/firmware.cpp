@@ -7,14 +7,14 @@
 
 #include <libopencm3/stm32/gpio.h>
 
+#include <stdio.h>
+
 int main(void)
 {
 begin_main:
   system_setup();
   //timer_setup();
   //uart_setup();
-
-  std::string msg = "Recieved: ";
 
   // Enable System Tick
   stm32f4::SysTick sysTickObject;
@@ -54,16 +54,10 @@ begin_main:
     {
       uint8_t data = usartObject.readByte();
 
-      msg += data;
-      msg += "\r\n";
-//      usartObject.write(&data, 1);
-      usartObject.write(msg);
-      msg.assign("Recieved: ");
+      printf("Recieved: %c\n", static_cast<char>(data));
     }
-    //sysTickObject.systemDelay(1000);
-
     // simulate some higher workload
-    //system_delay(1000); // 1 second
+    //sysTickObject.systemDelay(1000);
 
   }
 

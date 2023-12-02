@@ -25,14 +25,18 @@ LIBNAME			= opencm3_stm32f4
 ifeq ($(BOARD), BLACKPILLF411)
 LDSCRIPT = stm32f411.ld
 DEFS				+= -DSTM32F4
+DEFS				+= -DUSART_STDIO=USART6
 FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ARCH_FLAGS	= -fno-use-cxa-atexit -specs=nano.specs -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
+#ARCH_FLAGS	= -fno-use-cxa-atexit -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
 ARCH_FLAGS	+= -DBLACKPILLF411
 else ifeq ($(BOARD), NUCLEOF401RE)
 LDSCRIPT = stm32f401.ld
 DEFS				+= -DSTM32F4
+DEFS				+= -DUSART_STDIO=USART6
 FP_FLAGS		?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ARCH_FLAGS	= -fno-use-cxa-atexit -specs=nano.specs -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
+#ARCH_FLAGS	= -fno-use-cxa-atexit -mthumb -mcpu=cortex-m4 $(FP_FLAGS)
 ARCH_FLAGS	+= -DNUCLEOF401RE
 endif
 
@@ -78,6 +82,8 @@ OBJS		+= $(SHARED_SRC_DIR)/core/SysTick.o
 OBJS		+= $(SHARED_SRC_DIR)/core/InterruptManager.o
 OBJS		+= $(SHARED_SRC_DIR)/core/syscalls.o
 OBJS		+= $(SHARED_SRC_DIR)/core/USART.o
+OBJS		+= $(SHARED_SRC_DIR)/core/i2c.o
+OBJS		+= $(SHARED_SRC_DIR)/devices/BME280.o
 OBJS		+= $(SRC_DIR)/timer.o
 
 ###############################################################################
@@ -142,10 +148,10 @@ endif
 ###############################################################################
 # Used libraries
 
-#LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+LDLIBS		+= --specs=nosys.specs -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 
 # when compiling with g++, don't use -lnosys. The linker can't find write_r()?
-LDLIBS		+= -Wl,--start-group  -lgcc -Wl,--end-group -lnosys -specs=nosys.specs
+#LDLIBS		+= -Wl,--start-group  -lgcc -Wl,--end-group -lnosys -specs=nosys.specs
 
 ###############################################################################
 ###############################################################################

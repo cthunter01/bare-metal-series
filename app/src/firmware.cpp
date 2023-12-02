@@ -11,10 +11,16 @@ int main(void)
 {
 begin_main:
   system_setup();
-  timer_setup();
+  //timer_setup();
   //uart_setup();
 
+  std::string msg = "Recieved: ";
+
+  // Enable System Tick
   stm32f4::SysTick sysTickObject;
+
+  // Enable and create a PWM output on TIMER2
+  stm32f4::PWMOutput pwmOutput(stm32f4::PWM_TIM2_1);
   stm32f4::USART usartObject(stm32f4::USART6_2);
   usartObject.start();
 
@@ -39,7 +45,7 @@ begin_main:
       {
         delta *= -1.0f;
       }
-      timer_pwm_set_duty_cycle(duty_cycle);
+      pwmOutput.setDutyCycle(duty_cycle);
       //start_time = get_ticks();
       start_time = sysTickObject.getTicks();
     }
@@ -47,8 +53,12 @@ begin_main:
     if(usartObject.dataAvailable())
     {
       uint8_t data = usartObject.readByte();
-      data += 1;
-      usartObject.write(&data, 1);
+
+      msg += data;
+      msg += "\r\n";
+//      usartObject.write(&data, 1);
+      usartObject.write(msg);
+      msg.assign("Recieved: ");
     }
     //sysTickObject.systemDelay(1000);
 

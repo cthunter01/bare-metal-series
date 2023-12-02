@@ -3,17 +3,25 @@
 
 BME280::BME280(std::uint8_t inAddr, std::unique_ptr<stm32f4::I2C>&& i2c) :
     calData(),
-    mode(BME280_MODE::FORCED),
+    mode(BME280_MODE::NORMAL),
     osrs_p(BME280_OSRS_P::STANDARD),
     osrs_t(BME280_OSRS_T::STANDARD),
     t_fine(0),
     _i2c(std::move(i2c)),
-    _addr(inAddr)
+    _addr(inAddr),
+    _lastTemperature(0.0f),
+    _lastPressure(0.0f)
 {
 }
 
 BME280::~BME280()
 {
+}
+
+void BME280::start()
+{
+    readCalibration();
+    writeConfig();
 }
 
 void BME280::readCalibration()
@@ -66,73 +74,69 @@ void BME280::readCalibration()
 
 void BME280::writeConfig()
 {
-    // Writes zero to the config register.
-    // 0.5 ms standby
-    // no filter
-    // No SPI
-    //std::uint8_t buf[2];
-    //buf[0] = 0xF5;
-    //buf[1] = 0x0;
-    std::uint8_t data = 0x0;
+    ////////////////////////////
+    // Write the Config register
+    ////////////////////////////
+
+    // t_sb [2:0] / filter[2:0] / spi3w_en [0]
+    // bits 5-7   / bits 2-4    / bits 0-1
+
+    // 0.5 ms standby: t_sb = 0x0
+    uint8_t t_sb = 0x0;
+    // x16 samples filter: filter = 0b111 (or 0b101?, or 0b110?)
+    uint8_t filt = 0b111;
+    // No SPI: spi3w_en = 0x0
+    uint8_t spi = 0x0;
+    std::uint8_t data = (t_sb << 5) | (filt << 2) | (spi);
     std::uint8_t reg = 0xF5;
     _i2c->write(_addr, &reg, &data, 1U);
-    //write(i2cbus, buf, 2);
+
+    ////////////////////////////
+    // Write the Measurement Control register
+    ////////////////////////////
+    data = 0x0;
+    reg = 0xF4;
+    // osrs_t = 1x sample = 0x1;
+    // osrs_p = 4x sample = 0b011 = 3
+    // mode = normal = 0b11 = 3
+    data = (1 << 5) | (3 << 2) | 3;
+
+    _i2c->write(_addr, &reg, &data, 1U);
 }
 
 void BME280::takeMeasurement()
 {
-/*
-    std::uint8_t buffer[2];
-    std::uint8_t reg{0x0};
-    //write(i2cbus, &reg, 1);
-    //reg = 0xF4;
-    //write(i2cbus, &reg, 1);
-    //std::uint8_t val = (osrs_t << 5) | (osrs_p << 2) | mode;
-    std::uint8_t val = (5 << 5) | (5 << 2) | 1;
-    buffer[0] = 0xF4;
-    buffer[1] = val;
-    //write(i2cbus, buffer, 2);
-
-    _i2c->read(_addr, &buffer[0], &val, 1U);
-    reg = 0xF7;
+    uint8_t reg = 0xF7;
     //write(i2cbus, &reg, 1);
     std::uint8_t buf[6];
     
-    if(i2c_comm->readData(reg, buf, 6) < 6)
-    {
-        std::cout << "error reading bmp280\n";
-    }
-    std::uint32_t temp[3];
+    _i2c->read(_addr, &reg, buf, 6);
     std::int32_t  ut{0};
     std::int32_t up{0};
     
     // get raw pressure measurement
     up = ((buf[0] << 16) | (buf[1] << 8) | buf[0]) >> 4;
+    _lastPressure = calculateTruePressure(up);
 
     // get raw temperature measurement
     ut = ((buf[3] << 16) | (buf[4] << 8) | buf[5]) >> 4;
+    _lastTemperature = calculateTrueTemperature(ut);
 
-    //std::cout << "up = " << std::to_string(up) << std::endl;
-    //std::cout << "ut = " << std::to_string(ut) << std::endl;
-    std::cout << "T = " << std::to_string(calculateTrueTemperature(ut)) << std::endl;
-    //std::cout << "P = " << std::to_string(calculateTruePressure(up)) << std::endl;
-    std::cout << "P2 = " << ((double)calculateTruePressure(up)/256.0) << std::endl;
-*/
 }
 
 // This is straight from the datasheet
-std::int32_t BME280::calculateTrueTemperature(std::int32_t ut)
+float BME280::calculateTrueTemperature(std::int32_t ut)
 {
 	std::int32_t var1, var2, T;
 	var1 = ((((ut>>3) - ((std::int32_t)calData.T1<<1))) * ((std::int32_t)calData.T2)) >> 11;
 	var2 = (((((ut>>4) - ((std::int32_t)calData.T1)) * ((ut>>4) - ((std::int32_t)calData.T1))) >> 12) * ((std::int32_t)calData.T3)) >> 14;
 	t_fine = var1 + var2;
 	T = (t_fine * 5 + 128) >> 8;
-	return T;
+	return T / 100.0f;
 }
 
 // This is straight from the datasheet
-std::uint32_t BME280::calculateTruePressure(std::int32_t up)
+float BME280::calculateTruePressure(std::int32_t up)
 {
     std::int64_t var1, var2, p;
     var1 = ((std::int64_t)t_fine) - 128000;
@@ -150,5 +154,6 @@ std::uint32_t BME280::calculateTruePressure(std::int32_t up)
     var1 = (((std::int64_t)calData.P9) * (p>>13) * (p>>13)) >> 25;
     var2 = (((std::int64_t)calData.P8) * p) >> 19;
     p = ((p + var1 + var2) >> 8) + (((std::int64_t)calData.P7)<<4);
-    return (std::uint32_t)p;
+    float val = (uint32_t)p;
+    return val / 256.0f;
 }

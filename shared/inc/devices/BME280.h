@@ -2,6 +2,7 @@
 #define _BME280_H
 
 #include <memory>
+#include <utility>
 
 #include "core/common-defines.h"
 #include "core/i2c.h"
@@ -43,14 +44,18 @@ public:
     BME280(uint8_t inAddr, std::unique_ptr<stm32f4::I2C>&& i2c);
     ~BME280();
 
+    void start();
     void readCalibration();
     void writeConfig();
     void takeMeasurement();
     //double calculateTrueTemperatureDouble(long ut);
-    std::int32_t calculateTrueTemperature(int32_t ut);
-    std::uint32_t calculateTruePressure(int32_t up);
+    float calculateTrueTemperature(int32_t ut);
+    float calculateTruePressure(int32_t up);
 
-    typedef struct
+    float getTemperature() { return _lastTemperature; }
+    float getPressure() { return _lastPressure; }
+
+    struct BME280CalibrationStruct
     {
     std::uint16_t T1;
 	std::int16_t  T2;
@@ -64,9 +69,11 @@ public:
 	std::int16_t  P7;
 	std::int16_t  P8;
 	std::int16_t  P9;
-    } BMP280CalibrationStruct;
+    };
 
-    BMP280CalibrationStruct calData;
+    BME280CalibrationStruct getCalibrationData() { return calData; }
+
+    BME280CalibrationStruct calData;
 
     BME280_MODE mode;
     BME280_OSRS_P osrs_p;
@@ -76,6 +83,9 @@ public:
 
     std::unique_ptr<stm32f4::I2C> _i2c;
     uint8_t _addr;
+
+    float _lastTemperature;
+    float _lastPressure;
 
 };
 

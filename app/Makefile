@@ -128,9 +128,9 @@ TGT_CPPFLAGS	+= $(DEFS)
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
 ifeq ($(RELEASE),1)
-TGT_LDFLAGS		+= $(ARCH_FLAGS)
+TGT_LDFLAGS		+= $(ARCH_FLAGS) -u _printf_float
 else
-TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DBG)
+TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DBG) -u _printf_float
 endif
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
